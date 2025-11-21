@@ -1,0 +1,22 @@
+type Query {
+  hello: String
+  me: User
+}
+
+type User {
+  id: ID!
+  username: String!
+  role: Role!
+}
+
+type Role {
+  id: ID!
+  name: String!
+  describe: String!
+}
+
+type Permission {
+  id: ID!
+  name: String!
+  describe: String!
+}
