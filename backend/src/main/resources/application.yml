@@ -31,6 +31,8 @@ spring:
       enabled: true
       poll-interval: 1000
       quiet-period: 400
+  flyway:
+      baseline-on-migrate: true
 
 logging:
   file:
@@ -41,3 +43,4 @@ server:
 
 jwt:
   secret: X1a9Q7lRkpZExmFhC/Y1m+P1YrRm+0HvZkQ4L4bRuEk=
+

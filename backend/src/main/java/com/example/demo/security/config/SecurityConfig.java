@@ -1,10 +1,11 @@
-package com.example.demo.config;
+package com.example.demo.security.config;
 
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+
+import com.example.demo.security.jwt.JwtFilter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,10 +30,13 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
         return builder.build();
     }
 
@@ -39,23 +46,22 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
+    @Order(1)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/auth/register").permitAll()
                         .requestMatchers("/api/public/**").hasAnyRole("USER")
-                        .requestMatchers("/graphql").authenticated()
+                        .requestMatchers("/graphql").hasAnyRole("USER")
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, ex1) -> writeErrorResponse(request, response,
-                                HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "Unauthorized"))
+                        .authenticationEntryPoint(((request, response, authException) -> {
+                            String exceptionType = (String) request.getAttribute("jwt_exception");
+                            int status = HttpServletResponse.SC_UNAUTHORIZED;
+                            writeErrorResponse(request, response, status, exceptionType, exceptionType);
+                        }))
                         .accessDeniedHandler((request, response, ex1) -> writeErrorResponse(request, response,
                                 HttpServletResponse.SC_FORBIDDEN, "Forbidden", "Forbidden")))
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
