@@ -1,5 +1,7 @@
 package com.example.demo.config;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
@@ -14,8 +16,6 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-
-import java.time.Duration;
 
 @Configuration
 public class RedisConfig {
@@ -39,20 +39,12 @@ public class RedisConfig {
         @Bean
         public CacheManager cacheManager(RedisConnectionFactory factory) {
 
-                // 💡 替換成 GenericJackson2JsonRedisSerializer
-                // 它會自動處理 JSON 中的類型資訊，且不會影響 Web 的 ObjectMapper。
                 RedisSerializer<Object> jsonSerializer = new GenericJackson2JsonRedisSerializer();
 
                 RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                                // 可設定預設 TTL，例如 30 分鐘
                                 .entryTtl(Duration.ofMinutes(30))
-
-                                // 設置 Key 為 String 序列化
                                 .serializeKeysWith(SerializationPair.fromSerializer(new StringRedisSerializer()))
-
-                                // 設置 Value 為 Generic Jackson JSON 序列化
                                 .serializeValuesWith(SerializationPair.fromSerializer(jsonSerializer))
-
                                 // 禁用將 null 值寫入快取
                                 .disableCachingNullValues();
 
@@ -63,8 +55,8 @@ public class RedisConfig {
 
         // 3. 配置 RedisTemplate (用於手動操作 RedisService)
         @Bean
-        public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
-                RedisTemplate<String, Object> template = new RedisTemplate<>();
+        public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {
+                RedisTemplate<String, String> template = new RedisTemplate<>();
                 template.setConnectionFactory(factory);
 
                 // Key 序列化器：確保 Key 是可讀的 String
@@ -72,10 +64,8 @@ public class RedisConfig {
                 template.setKeySerializer(stringSerializer);
                 template.setHashKeySerializer(stringSerializer);
 
-                // 💡 替換成 GenericJackson2JsonRedisSerializer
-                RedisSerializer<Object> jsonSerializer = new GenericJackson2JsonRedisSerializer();
-                template.setValueSerializer(jsonSerializer);
-                template.setHashValueSerializer(jsonSerializer);
+                template.setValueSerializer(stringSerializer);
+                template.setHashValueSerializer(stringSerializer);
 
                 template.afterPropertiesSet();
                 return template;

@@ -1,20 +1,22 @@
 package com.example.demo.service;
 
-// ... 保持所有現有 import ...
+import java.util.List;
+import java.util.stream.Collectors;
 
-// 引入 Logger
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.RegisterRequest;
-import com.example.demo.dto.cache.UserCacheDto;
+import com.example.demo.dto.cache.UserRoleCacheDto;
 import com.example.demo.entity.users.RoleEntity;
 import com.example.demo.entity.users.UserEntity;
 import com.example.demo.entity.users.UserRolesEntity;
@@ -26,7 +28,7 @@ import com.example.demo.repository.UserRolesRepository;
 
 @Service
 @CacheConfig(cacheNames = "users")
-@Transactional // 確保事務管理和 Lazy Loading 支援
+@Transactional
 public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -66,41 +68,31 @@ public class UserService {
         RoleEntity roleEntity = roleRepository.findByName(requestedRole)
                 .orElseThrow(() -> {
                     logger.error("Required role not found in DB: {}", requestedRole.name());
-                    // 拋出內部錯誤，因為預設角色應該被 RoleInitializer 創建
                     return new AppException("系統配置錯誤：缺少必要的角色實體", HttpStatus.INTERNAL_SERVER_ERROR);
                 });
 
-        // 賦予用戶角色
         UserRolesEntity userRolesEntity = new UserRolesEntity();
-        userRolesEntity.setUser(savedUser); // 使用保存後的用戶實體
-        userRolesEntity.setRole(roleEntity); // 確保 RoleEntity 存在
+        userRolesEntity.setUser(savedUser);
+        userRolesEntity.setRole(roleEntity);
 
         userRolesRepository.save(userRolesEntity);
         logger.info("User {} registered successfully with role {}", userName, requestedRole.name());
     }
 
-    @Cacheable(key = "#userName", unless = "#result == null")
-    @Transactional(readOnly = true) // 查詢操作，設為只讀模式優化性能
-    public UserCacheDto getUser(String userName) {
-
-        UserEntity user = userRepository.findByUsername(userName);
-
-        if (user == null) {
-            return null;
-        }
-
-        UserCacheDto userCacheDto = new UserCacheDto(
-                user.getId(),
-                user.getUsername(),
-                new java.util.ArrayList<>());
-
-        user.getUserRolesEntities().forEach(userRoleEntity -> {
-            logger.debug("Mapping role entity: {}", userRoleEntity);
-            if (userRoleEntity.getRole() != null && userRoleEntity.getRole().getName() != null) {
-                userCacheDto.getRoles().add(userRoleEntity.getRole().getName());
-            }
-        });
-
-        return userCacheDto;
+    @Cacheable(value = "userRole", key = "#username", unless = "#result == null")
+    @Transactional(readOnly = true)
+    public UserRoleCacheDto getUserRole(String username) {
+        UserEntity userEntity = userRepository.findByUsername(username);
+        List<String> roleNames = userEntity.getUserRolesEntities()
+                .stream()
+                .map(userRolesEntitie -> userRolesEntitie.getRole().getName().name())
+                .collect(Collectors.toList());
+        UserRoleCacheDto userRoleCacheDto = new UserRoleCacheDto();
+        userRoleCacheDto.setUsername(userEntity.getUsername());
+        userRoleCacheDto.setPassword(userEntity.getPassword());
+        userRoleCacheDto.setRoleNames(roleNames);
+        System.out.println("getUserRole");
+        return userRoleCacheDto;
     }
+
 }

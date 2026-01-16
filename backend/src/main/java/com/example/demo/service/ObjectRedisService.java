@@ -14,20 +14,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ObjectRedisService {
 
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    public <T> void set(String key, T object, long ttlSeconds) throws JsonProcessingException {
-        String json = objectMapper.writeValueAsString(object);
-        redisTemplate.opsForValue().set(key, json, ttlSeconds, TimeUnit.SECONDS);
-    }
 
     public <T> T get(String key, Class<T> clazz) throws JsonMappingException, JsonProcessingException {
         String json = (String) redisTemplate.opsForValue().get(key);
         if (json == null)
             return null;
         return objectMapper.readValue(json, clazz);
+    }
+
+    public <T> void set(String key, T object, int ttlTime, TimeUnit ttlTimeUnit) throws JsonProcessingException {
+        String json = objectMapper.writeValueAsString(object);
+        redisTemplate.opsForValue().set(key, json, ttlTime, ttlTimeUnit);
     }
 
     // public <T> void set(String key, T object, long ttlSeconds) {

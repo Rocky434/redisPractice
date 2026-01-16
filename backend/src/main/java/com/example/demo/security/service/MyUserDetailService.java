@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.security.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,9 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.entity.users.UserEntity;
-import com.example.demo.entity.users.UserRolesEntity;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.dto.cache.UserRoleCacheDto;
+import com.example.demo.service.UserService;
 
 import jakarta.transaction.Transactional;
 
@@ -22,20 +21,21 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class MyUserDetailService implements UserDetailsService {
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.findByUsername(username);
+        UserRoleCacheDto userRoleCacheDto = userService.getUserRole(username);
+        System.out.println("loadUserByUsername");
 
-        List<GrantedAuthority> roleNames = userEntity.getUserRolesEntities()
+        List<GrantedAuthority> roleNames = userRoleCacheDto.getRoleNames()
                 .stream()
-                .map(userRolesEntitie -> new SimpleGrantedAuthority(userRolesEntitie.getRole().getName().name()))
+                .map(roleName -> new SimpleGrantedAuthority(roleName))
                 .collect(Collectors.toList());
 
         return User.builder()
-                .username(userEntity.getUsername())
-                .password(userEntity.getPassword())
+                .username(userRoleCacheDto.getUsername())
+                .password(userRoleCacheDto.getPassword())
                 .authorities(roleNames)
                 .build();
     }
