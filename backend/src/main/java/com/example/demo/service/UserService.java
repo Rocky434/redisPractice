@@ -91,7 +91,6 @@ public class UserService {
         userRoleCacheDto.setUsername(userEntity.getUsername());
         userRoleCacheDto.setPassword(userEntity.getPassword());
         userRoleCacheDto.setRoleNames(roleNames);
-        System.out.println("getUserRole");
         return userRoleCacheDto;
     }
 

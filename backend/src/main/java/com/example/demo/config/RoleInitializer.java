@@ -11,6 +11,7 @@ import com.example.demo.entity.users.RoleEntity;
 import com.example.demo.enums.Role;
 import com.example.demo.repository.RoleRepository;
 
+// 正式版刪除，這個類別的目的是在應用程式啟動時自動檢查並初始化角色資料到資料庫中，確保系統有預設的角色可供使用。
 @Component
 public class RoleInitializer {
 

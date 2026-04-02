@@ -8,7 +8,7 @@
 /app/src/main/java/com/example/demo/dto/LoginRequest.java
 /app/src/main/java/com/example/demo/dto/LoginResponse.java
 /app/src/main/java/com/example/demo/dto/RegisterRequest.java
-/app/src/main/java/com/example/demo/dto/cache/RoleCacheDto.java
+/app/src/main/java/com/example/demo/dto/cache/UserRoleCacheDto.java
 /app/src/main/java/com/example/demo/entity/users/PermissionEntity.java
 /app/src/main/java/com/example/demo/entity/users/RoleEntity.java
 /app/src/main/java/com/example/demo/entity/users/RolePermissionsEntity.java
@@ -20,6 +20,7 @@
 /app/src/main/java/com/example/demo/repository/RoleRepository.java
 /app/src/main/java/com/example/demo/repository/UserRepository.java
 /app/src/main/java/com/example/demo/repository/UserRolesRepository.java
+/app/src/main/java/com/example/demo/security/config/PasswordConfig.java
 /app/src/main/java/com/example/demo/security/config/SecurityConfig.java
 /app/src/main/java/com/example/demo/security/jwt/JwtFilter.java
 /app/src/main/java/com/example/demo/security/jwt/JwtUtil.java

@@ -1,12 +1,13 @@
 type Query {
   hello: String
   me: User
+  users: [User!]!
 }
 
 type User {
   id: ID!
   username: String!
-  role: Role!
+  roles: [Role!]! 
 }
 
 type Role {
