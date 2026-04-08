@@ -3,7 +3,7 @@ name: Build and Push Docker Images
 on:
   push:
     branches:
-      - main   # 你用的 branch
+      - master   # 你用的 branch
 
 jobs:
   build:
