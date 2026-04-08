@@ -1,20 +1,13 @@
-FROM eclipse-temurin:21-jdk
-
-# 設定工作目錄
+# build 階段
+FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /app
-
-# 複製 Maven Wrapper 腳本與設定
-COPY mvnw mvnw
-COPY .mvn/ .mvn/
-
-# 複製 pom.xml 先讓 Docker 下載依賴，利用快取
-COPY pom.xml .
-
-# 先下載所有 Maven 依賴（離線模式，避免每次build都下載）
-RUN chmod +x mvnw && ./mvnw dependency:go-offline
-
-# 複製原始碼
 COPY . .
+RUN mvn clean package -DskipTests
 
-# 啟動 Spring Boot
-CMD ["./mvnw", "spring-boot:run"]
+# runtime 階段
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]
