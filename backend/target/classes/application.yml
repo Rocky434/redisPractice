@@ -8,11 +8,9 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      format_sql: true      # 讓 SQL 換行排版（你原本這行放錯位置了，要放在 properties 內）
-      highlight_sql: true   # 讓 SQL 在 Console 變彩色
-      use_sql_comments: true # 在 SQL 前顯示是哪個 Method 觸發的
       ddl-auto: update
       dialect: org.hibernate.dialect.PostgreSQLDialect
+      format_sql: true
     show-sql: true
     properties:
       hibernate:
@@ -37,9 +35,6 @@ spring:
       baseline-on-migrate: true
 
 logging:
-  level:
-    org.hibernate.SQL: debug           # 顯示 SQL
-    org.hibernate.orm.jdbc.bind: trace # 顯示 ? 綁定的參數數值 (最重要！)
   file:
     name: logs/app.log
 

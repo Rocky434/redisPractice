@@ -39,7 +39,9 @@ services:
       - app-network
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
     container_name: spring_backend
     restart: always
     ports:
