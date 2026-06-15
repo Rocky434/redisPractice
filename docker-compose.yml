@@ -61,7 +61,7 @@ services:
 
     volumes:
       - ./backend:/app               # 掛載本地原始碼
-      - C:/Users/Rocky/.m2:/root/.m2     # Maven 快取 (Windows)
+      - maven-cache:/root/.m2
     command: ./mvnw spring-boot:run
     networks:
       - app-network
@@ -71,3 +71,6 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  maven-cache:
