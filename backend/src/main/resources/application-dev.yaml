@@ -8,7 +8,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
       dialect: org.hibernate.dialect.PostgreSQLDialect
       format_sql: true
     show-sql: true
@@ -43,5 +43,5 @@ server:
   port: 8080
 
 jwt:
-  secret: X1a9Q7lRkpZExmFhC/Y1m+P1YrRm+0HvZkQ4L4bRuEk=
+  secret: ${JWT_SECRET:dev-secret-key}
 

@@ -3,7 +3,7 @@ name: Build and Push Docker Images
 on:
   push:
     branches:
-      - master   # 你用的 branch
+      - master # 你用的 branch
 
 jobs:
   build:
@@ -22,8 +22,10 @@ jobs:
       # 🐳 Build backend
       - name: Build backend image
         run: |
-          docker build ./backend -t ${{ secrets.DOCKER_USERNAME }}/spring-backend:latest
+          TAG=${GITHUB_SHA::7}
+          docker build ./backend -t ${{ secrets.DOCKER_USERNAME }}/spring-backend:$TAG
 
       - name: Push backend image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/spring-backend:latest
+          TAG=${GITHUB_SHA::7}ˊ
+          docker push ${{ secrets.DOCKER_USERNAME }}/spring-backend:$TAG

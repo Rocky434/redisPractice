@@ -58,6 +58,7 @@ services:
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
       WATCHPACK_POLLING: "true"
+      JWT_SECRET: X1a9Q7lRkpZExmFhC/Y1m+P1YrRm+0HvZkQ4L4bRuEk=
 
     volumes:
       - ./backend:/app               # 掛載本地原始碼

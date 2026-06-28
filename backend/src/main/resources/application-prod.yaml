@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: demo
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    format_sql: false
+    properties:
+      hibernate:
+        naming:
+          physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+
+  redis:
+    host: ${SPRING_REDIS_HOST}
+    port: ${SPRING_REDIS_PORT:6379}
+    timeout: 2000
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: 5000
+
+  web:
+    resources:
+      add-mappings: false
+
+  flyway:
+    enabled: false
+    baseline-on-migrate: true
+
+logging:
+  level:
+    root: INFO
+  file:
+    name: logs/app.log
+
+server:
+  port: 8080
+
+jwt:
+  secret: ${JWT_SECRET}
