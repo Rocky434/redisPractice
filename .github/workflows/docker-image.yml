@@ -27,5 +27,5 @@ jobs:
 
       - name: Push backend image
         run: |
-          TAG=${GITHUB_SHA::7}ˊ
+          TAG=${GITHUB_SHA::7}
           docker push ${{ secrets.DOCKER_USERNAME }}/spring-backend:$TAG
