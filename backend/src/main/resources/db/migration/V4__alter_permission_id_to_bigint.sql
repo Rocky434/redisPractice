@@ -1,0 +1,2 @@
+ALTER TABLE users.permission
+ALTER COLUMN id TYPE BIGINT;
