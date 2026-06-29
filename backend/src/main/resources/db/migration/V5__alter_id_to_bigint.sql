@@ -1,0 +1,11 @@
+ALTER TABLE users.role
+ALTER COLUMN id TYPE BIGINT;
+
+ALTER TABLE users.role_permissions
+ALTER COLUMN id TYPE BIGINT;
+
+ALTER TABLE users."user"
+ALTER COLUMN id TYPE BIGINT;
+
+ALTER TABLE users.user_roles
+ALTER COLUMN id TYPE BIGINT;
