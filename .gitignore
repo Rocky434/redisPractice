@@ -1,0 +1,21 @@
+# Environment-specific configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Docker runtime data and application logs
+/db/
+/redis/
+/backend/logs/
+*.log
+
+# Java build artifacts
+/backend/target/
+*.class
+
+# IDE and operating-system files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
